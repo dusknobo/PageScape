@@ -3,7 +3,7 @@ import type { CanvasStorageIO } from './types';
 
 /** Fresh reads are required for conflict detection; Plugin.loadData can return old cache on failure. */
 export function createCanvasIO(pluginName: string): CanvasStorageIO {
-  if (!/^[a-z0-9-]+$/.test(pluginName)) throw new Error('画布插件路径无效');
+  if (!/^[a-zA-Z0-9-]+$/.test(pluginName)) throw new Error('画布插件路径无效');
   const pathFor = (name: string) => {
     if (!/^canvas-[a-zA-Z0-9_-]+\.json$/.test(name)) throw new Error('画布文件名无效');
     return `/data/storage/petal/${pluginName}/${name}`;

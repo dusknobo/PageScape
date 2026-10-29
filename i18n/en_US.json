@@ -10,5 +10,6 @@
   "migrateCanvasDocuments": "Migrate Canvas to Documents",
   "openDocumentCanvas": "Open Document Canvas",
   "embedCanvas": "Insert or Embed Canvas",
-  "canvasReferences": "Canvas References"
+  "canvasReferences": "Canvas References",
+  "migratePluginId": "Migrate Legacy Plugin ID"
 }

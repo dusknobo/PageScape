@@ -23,13 +23,19 @@ PageScape is a SiYuan plugin for live child-document previews and editable, docu
 
 ## Install
 
-Version **0.6.3**. Minimum SiYuan version: **3.8.3**. Tested with **3.8.8**, primarily on desktop and desktop browsers. Marketplace listing is being requested; use Releases to install while the application is under review.
+Version **0.7.0**. Minimum SiYuan version: **3.8.3**. Tested with **3.8.8**, primarily on desktop and desktop browsers. Marketplace listing is being requested; use Releases to install while the application is under review.
 
 1. Download `package.zip` from the [latest release](https://github.com/dusknobo/PageScape/releases/latest).
-2. Extract it into `<workspace>/data/plugins/siyuan-child-cards/`.
+2. Extract it into `<workspace>/data/plugins/PageScape/` (case-sensitive).
 3. Check that `plugin.json` and `index.js` are directly inside that folder, then enable **PageScape** in SiYuan.
 
-Disable the plugin before replacing its files when updating. The internal package ID remains **`siyuan-child-cards`** so existing custom blocks, references and legacy storage continue to work. The PageScape repository is the single source for development, marketplace submission and releases.
+The package ID is **`PageScape`** from 0.7.0 onward. This repository is the single source for development, marketplace submission and releases.
+
+### Upgrading from 0.6.x
+
+Save and close legacy editors, disable `siyuan-child-cards`, and install the new plugin. Run **Migrate Legacy Plugin ID** in the command palette or Canvas menu. Review the counts before choosing **Migrate**.
+
+Original blocks are backed up under `data/storage/petal/PageScape/plugin-id-backups/` before any block update. Migration preserves block IDs, content, layouts and references while changing the plugin namespace. Legacy storage is copied, with the original directory retained. Conflicting target files stop migration; import receipts prevent a repeated run from overwriting later new-plugin changes. Only open, unencrypted notebooks are scanned; reopen other notebooks and run migration again when needed.
 
 ## Quick start
 

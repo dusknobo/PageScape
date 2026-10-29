@@ -38,13 +38,14 @@ npm run test:canvas-safety
 npm run test:canvas-inline
 npm run test:canvas-features
 npm run test:canvas-parity
+npm run test:plugin-id
 ```
 
 `test:canvas-safety` 使用 `test:canvas-documents` 生成的隔离测试夹具。测试截图和记录放在 `.qa/`，不提交到仓库。
 
 ## 修改与发布
 
-- 保持内部 ID `siyuan-child-cards`，更改显示名称时不要更换旧文档使用的命名空间。
+- 0.7.0 起内部 ID 为 `PageScape`；保留旧版数据格式标识和迁移逻辑，改名时必须验证原块备份、已有布局及引用。
 - 保存和导入失败应保留原内容；不要用空场景修复损坏的持久化数据。
 - 自定义块中不嵌套 Protyle；文档原文编辑保留在独立 Canvas 中。
 - 新增持久化字段时同步维护模型校验、JSON Canvas 交换和必要测试。
@@ -52,7 +53,7 @@ npm run test:canvas-parity
 
 ### 唯一发布仓库
 
-源码、集市提交和版本发布统一使用 `dusknobo/PageScape`；`plugin.json.url` 必须指向该仓库。内部 ID 保持 `siyuan-child-cards`，兼容已有文档与存储。官方当前校验器将仓库地址与包 ID 分别校验；不要为了改显示名称而改动已有持久化命名空间。
+源码、集市提交和版本发布统一使用 `dusknobo/PageScape`；`plugin.json.name` 为 `PageScape`，`plugin.json.url` 指向本仓库。旧版 `siyuan-child-cards` 数据通过显式迁移入口升级；读取与写入笔记或工作空间文件均使用思源 API。
 
 发布时将经过验证的 `main` 和对应版本标签推送到主仓库：
 

@@ -20,16 +20,16 @@ const base = 'http://127.0.0.1:6807';
     }
     const info=await api('/api/system/getWorkspaceInfo');
     assert.equal(path.resolve(info.workspaceDir).toLowerCase(),path.join(root,'.test-workspace').toLowerCase());
-    await fs.cp(path.join(root,'dist'),path.join(root,'.test-workspace/data/plugins/siyuan-child-cards'),{recursive:true});
+    await fs.cp(path.join(root,'dist'),path.join(root,'.test-workspace/data/plugins/PageScape'),{recursive:true});
     await api('/api/setting/setBazaar',{trust:true,petalDisabled:false});
-    await api('/api/petal/setPetalEnabled',{packageName:'siyuan-child-cards',enabled:true});
+    await api('/api/petal/setPetalEnabled',{packageName:'PageScape',enabled:true});
     const notebook=(await api('/api/notebook/createNotebook',{name:'Insertion race '+Date.now()})).notebook.id;
     const intro='在这里插入卡片 '+Date.now();
     const parent=await api('/api/filetree/createDocWithMd',{notebook,path:'/Parent',markdown:intro});
     await api('/api/filetree/createDocWithMd',{notebook,path:'/Parent/Child',markdown:'新块保存前也可以显示子页面。'});
     await page.goto(base+'/',{waitUntil:'domcontentloaded'});
-    await page.waitForFunction(()=>window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(p=>p.name==='siyuan-child-cards'));
-    await page.evaluate(id=>window.siyuan.ws.app.plugins.find(p=>p.name==='siyuan-child-cards').openDocument(id),parent);
+    await page.waitForFunction(()=>window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(p=>p.name==='PageScape'));
+    await page.evaluate(id=>window.siyuan.ws.app.plugins.find(p=>p.name==='PageScape').openDocument(id),parent);
     await page.locator('.protyle:visible').getByText(intro,{exact:true}).last().click();
     let holding=true;
     let heldTransactions=0;
@@ -37,7 +37,7 @@ const base = 'http://127.0.0.1:6807';
       if(holding) {heldTransactions++;await gate;}
       await route.continue();
     });
-    await page.evaluate(()=>window.siyuan.ws.app.plugins.find(p=>p.name==='siyuan-child-cards').commands.find(c=>c.langKey==='insertChildCards').callback());
+    await page.evaluate(()=>window.siyuan.ws.app.plugins.find(p=>p.name==='PageScape').commands.find(c=>c.langKey==='insertChildCards').callback());
     const gallery=page.locator('.protyle:visible .scc-root').last();
     await gallery.waitFor();
     if(process.argv.includes('--baseline')) {

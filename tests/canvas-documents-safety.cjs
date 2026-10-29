@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, '..');
 const workspace = path.join(root, '.test-workspace');
 const base = 'http://127.0.0.1:6807';
 const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
-const pluginName = 'siyuan-child-cards';
+const pluginName = 'PageScape';
 const output = path.join(root, '.qa/canvas-documents-safety.json');
 const report = { kernel: undefined, workspace, copies: {}, passed: [], pageErrors: [] };
 let browser;
@@ -46,7 +46,7 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   async function boot(target) {
     target.on('pageerror', error => report.pageErrors.push(error.message));
     await target.goto(base + '/', { waitUntil: 'domcontentloaded' });
-    await target.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(plugin => plugin.name === 'siyuan-child-cards'), undefined, { timeout: 60000 }).catch(async error => {
+    await target.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(plugin => plugin.name === 'PageScape'), undefined, { timeout: 60000 }).catch(async error => {
       report.bootFailure = await target.evaluate(() => ({ url: location.href, text: document.body.innerText.slice(-1500), plugins: window.siyuan?.ws?.app?.plugins?.map(plugin => plugin.name) }));
       throw error;
     });
@@ -55,11 +55,11 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   }
   const page1 = await context.newPage();
   await boot(page1);
-  const pluginAvailable = await page1.evaluate(() => Boolean(window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvasStore));
+  const pluginAvailable = await page1.evaluate(() => Boolean(window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvasStore));
   assert.ok(pluginAvailable, 'already enabled 0.3 plugin must expose CanvasDocumentStore');
   async function newCopy(label) {
     const scene = await page1.evaluate(async ({ source, notebook, label }) => {
-      const store = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvasStore;
+      const store = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvasStore;
       const sourceScene = await store.load(source);
       return store.copy({ ...sourceScene, title: `安全测试 ${label} ${Date.now()}` }, { notebook });
     }, { source: fixture.documentId, notebook: fixture.notebook, label });
@@ -69,7 +69,7 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   }
   async function open(target, id) {
     await target.evaluate(async id => {
-      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards');
+      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape');
       await plugin.openCanvasDocument(id);
       const controller = [...plugin.canvases.values()].find(value => value.element.getClientRects().length);
       if (controller?.scene?.id !== id) throw new Error('requested QA board did not open');
@@ -79,13 +79,13 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   }
   async function state(target) {
     return target.evaluate(() => {
-      const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(value => value.element.getClientRects().length);
+      const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(value => value.element.getClientRects().length);
       return { scene: controller.scene, dirty: controller.dirty, paused: controller.paused, status: controller.element.querySelector('.scv-status')?.textContent, tone: controller.element.querySelector('.scv-status')?.dataset.tone };
     });
   }
   async function editAndFlush(target, note, title) {
     await target.evaluate(async ({ note, title }) => {
-      const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(value => value.element.getClientRects().length);
+      const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(value => value.element.getClientRects().length);
       const nodes = controller.scene.nodes.map(node => node.kind === 'text' ? { ...node, text: note } : node);
       if (!nodes.some(node => node.kind === 'text')) throw new Error('QA fixture needs a text node');
       controller.change({ ...controller.scene, nodes, ...(title ? { title } : {}) });
@@ -94,12 +94,12 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
     }, { note, title });
   }
   async function load(id) {
-    return page1.evaluate(id => window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvasStore.load(id), id);
+    return page1.evaluate(id => window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvasStore.load(id), id);
   }
   async function saveAttempt(scene) {
     return page1.evaluate(async scene => {
       try {
-        const saved = await window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvasStore.save(scene, scene.revision);
+        const saved = await window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvasStore.save(scene, scene.revision);
         return { saved };
       } catch (error) { return { error: { name: error.name, message: error.message, latest: error.latest } }; }
     }, scene);
@@ -126,7 +126,7 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   const countRetry = request => { if (request.url().endsWith('/api/block/updateBlock')) retryWrites++; };
   page1.on('request', countRetry);
   await page1.evaluate(async () => {
-    const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(value => value.element.getClientRects().length);
+    const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(value => value.element.getClientRects().length);
     controller.paused = false; await controller.flush();
   });
   page1.off('request', countRetry);
@@ -136,7 +136,7 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   assert.equal(retryWrites, 0, 'conflicting retry must stop before a native write');
   assert.deepEqual(body(conflict.scene), body(localBeforeRetry), 'local layout and complete body survive conflict');
   await page1.evaluate(async notebook => {
-    const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(value => value.element.getClientRects().length);
+    const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(value => value.element.getClientRects().length);
     controller.host.chooseDestination = async () => ({ notebook });
     await controller.saveCopy();
   }, fixture.notebook);
@@ -202,7 +202,7 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
   assert.equal(renameConflict.tone, 'conflict');
   assert.equal((await api('/api/block/getBlockInfo', { id: renamed.id })).rootTitle, nativeTitle);
   await page1.evaluate(async () => {
-    const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(value => value.element.getClientRects().length);
+    const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(value => value.element.getClientRects().length);
     controller.paused = false; await controller.flush();
   });
   assert.equal((await state(page1)).tone, 'conflict');
@@ -213,7 +213,7 @@ function text(scene) { return scene.nodes.find(node => node.kind === 'text')?.te
 
   for (const [id, before] of fixtureBefore) assert.deepEqual(await api('/api/block/getBlockKramdown', { id }), before, 'original integration fixtures remain unchanged');
   report.passed.push('original integration fixtures unchanged');
-  report.pluginStillEnabled = await page1.evaluate(() => window.siyuan.ws.app.plugins.some(plugin => plugin.name === 'siyuan-child-cards'));
+  report.pluginStillEnabled = await page1.evaluate(() => window.siyuan.ws.app.plugins.some(plugin => plugin.name === 'PageScape'));
   assert.ok(report.pluginStillEnabled);
   await fs.writeFile(output, JSON.stringify(report, null, 2));
   console.log('Canvas document safety passed', JSON.stringify({ copies: report.copies, passed: report.passed }));

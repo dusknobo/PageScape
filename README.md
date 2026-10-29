@@ -25,15 +25,23 @@ PageScape 是一个思源笔记插件，将自动更新的子页卡片与可编�
 
 ## 安装
 
-当前版本 **0.6.3**；最低思源版本 **3.8.3**，已在 **3.8.8** 验证。主要支持桌面端与桌面浏览器。正在申请思源集市上架，审核通过前可通过 Releases 安装。
+当前版本 **0.7.0**；最低思源版本 **3.8.3**，已在 **3.8.8** 验证。主要支持桌面端与桌面浏览器。正在申请思源集市上架，审核通过前可通过 Releases 安装。
 
 1. 从 [Releases](https://github.com/dusknobo/PageScape/releases/latest) 下载 **package.zip**。
-2. 解压到 `<思源工作空间>/data/plugins/siyuan-child-cards/`。
+2. 解压到 `<思源工作空间>/data/plugins/PageScape/`。
 3. 确认该目录下直接包含 `plugin.json`、`index.js` 等文件，再在思源插件设置中启用 **页境 · PageScape**。
 
 更新前先禁用插件，再替换插件文件。Release 同时提供 `SHA256SUMS`，可用于核对下载文件。
 
-> 插件内部 ID 继续使用 `siyuan-child-cards`。请保留这个安装目录名，以兼容已有自定义块、画布引用和旧版存储。源码、集市提交和版本发布统一使用本 PageScape 仓库，展示名称为「页境 · PageScape」。
+> 从 0.7.0 起，插件 ID、安装目录和 GitHub 仓库名统一为 `PageScape`，注意大小写。源码、集市提交和版本发布都使用本仓库。
+
+### 从 0.6.x 升级
+
+1. 保存并关闭旧版编辑页，在思源设置中停用 `siyuan-child-cards`，再安装并启用新插件。
+2. 在命令面板运行「迁移旧版插件 ID · Migrate Legacy Plugin ID」，或从顶栏 Canvas 菜单进入。
+3. 检查旧版块和存储文件数量，再点击「备份并迁移」。迁移保留块 ID、正文、画布布局和引用，只修改插件命名空间。
+
+原块备份保存到 `data/storage/petal/PageScape/plugin-id-backups/`。旧存储会复制到新目录，原目录保留；已有不同内容时停止，不覆盖。已导入文件有记录，重复执行不会覆盖后续新版本的存储修改。迁移只检查已打开且未加密的笔记本，其他笔记本打开后可以再次执行。
 
 ## 快速开始
 

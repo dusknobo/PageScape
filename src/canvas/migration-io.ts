@@ -5,7 +5,7 @@ import type { CanvasMigrationIO } from './migration';
 
 /** Raw reads preserve whitespace, encoding and every byte in legacy JSON backups. */
 export function createCanvasMigrationIO(pluginName: string): CanvasMigrationIO {
-  if (!/^[a-z0-9-]+$/.test(pluginName)) throw new Error('插件存储路径无效');
+  if (!/^[a-zA-Z0-9-]+$/.test(pluginName)) throw new Error('插件存储路径无效');
   const base = `/data/storage/petal/${pluginName}`;
   const legacyName = (name: string) => {
     if (!/^canvas-[a-zA-Z0-9_-]+\.json$/.test(name) || name === CANVAS_MIGRATION_MANIFEST) throw new Error('旧画布文件名无效');

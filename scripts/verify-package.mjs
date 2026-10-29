@@ -10,9 +10,10 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const manifest = JSON.parse(await readFile(path.join(root, 'plugin.json'), 'utf8'));
 const pkg = JSON.parse(await readFile(path.join(root, 'package.json'), 'utf8'));
 const lock = JSON.parse(await readFile(path.join(root, 'package-lock.json'), 'utf8'));
-assert.equal(manifest.name, 'siyuan-child-cards', 'Preserve IDs used by existing documents and plugin storage');
+assert.equal(manifest.name, 'PageScape', 'The package ID matches the single GitHub repository');
 assert.equal(manifest.version, pkg.version); assert.equal(pkg.version, lock.version); assert.equal(pkg.version, lock.packages[''].version);
 assert.equal(manifest.url, 'https://github.com/dusknobo/PageScape', 'The marketplace and source use the single PageScape repository');
+assert.equal(new URL(manifest.url).pathname.split('/').at(-1), manifest.name);
 assert.match(manifest.displayName.default, /PageScape/);
 for (const field of ['displayName', 'description', 'readme']) {
   assert.ok(manifest[field].default?.trim(), `${field}.default is required`);

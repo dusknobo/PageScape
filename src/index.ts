@@ -19,6 +19,8 @@ import { createCanvasMigrationIO } from './canvas/migration-io';
 import { loadCanvasMigrationManifest, migrateLegacyCanvases } from './canvas/migration';
 import type { CanvasMigrationIO, CanvasMigrationManifest } from './canvas/migration';
 import type { CanvasDestination, CanvasScene } from './canvas/types';
+import { LEGACY_PLUGIN_ID } from './plugin-id-migration';
+import { createPluginIdMigrationIO, showPluginIdMigration } from './plugin-id-migration-ui';
 import './styles.css';
 import './canvas/styles.css';
 
@@ -26,7 +28,7 @@ const ICON = 'icon-siyuan-child-cards';
 const CANVAS_ICON = 'icon-siyuan-child-canvas';
 type Toolbar = Parameters<Plugin['updateProtyleToolbar']>[0];
 
-export default class ChildCardsPlugin extends Plugin {
+export default class PageScapePlugin extends Plugin {
   private api = new SiyuanApi();
   private cache = new PreviewCache((doc, signal) => this.api.getPreview(doc, signal));
   private views = new Set<GalleryController>();
@@ -118,6 +120,7 @@ export default class ChildCardsPlugin extends Plugin {
         menu.addItem({ label: '打开已有 Canvas · Open Canvas', click: () => { void this.openCanvas(); } });
         menu.addItem({ label: '插入或引用 Canvas · Embed Canvas', click: () => { const editor = getActiveEditor(); if (editor) void this.insertCanvas(editor); else showMessage('请先打开要插入画布的文档。'); } });
         menu.addItem({ label: '查看当前文档的画布引用', click: () => this.showActiveReferences() });
+        menu.addItem({ label: '迁移旧版插件 ID · Migrate Legacy Plugin ID', click: () => this.migratePluginId() });
         menu.open({ x: event.clientX, y: event.clientY });
       } });
     this.customBlockRenders[CANVAS_DOCUMENT_BLOCK] = {
@@ -200,6 +203,7 @@ export default class ChildCardsPlugin extends Plugin {
     this.addCommand({ langKey: 'newCanvas', hotkey: '', callback: () => { void this.newCanvas(); } });
     this.addCommand({ langKey: 'importChildrenToCanvas', hotkey: '', callback: () => { void this.importCurrentChildren(); } });
     this.addCommand({ langKey: 'migrateCanvasDocuments', hotkey: '', callback: () => { void this.migrateFromActive(); } });
+    this.addCommand({ langKey: 'migratePluginId', hotkey: '', callback: () => this.migratePluginId() });
     this.addCommand({ langKey: 'openDocumentCanvas', hotkey: '', callback: () => {
       const id = getActiveEditor()?.protyle.block.rootID;
       if (id) {
@@ -219,6 +223,15 @@ export default class ChildCardsPlugin extends Plugin {
     this.eventBus.on('switch-protyle', this.onFocus);
     window.addEventListener('focus', this.onFocus);
     document.addEventListener('visibilitychange', this.onFocus);
+  }
+
+  private migratePluginId(): void {
+    const io = createPluginIdMigrationIO(() => {
+      if (this.lifetime.signal.aborted || window.siyuan?.config?.readonly || window.siyuan?.isPublish) throw new Error('当前不能写入工作空间');
+      if (this.app.plugins.some(plugin => plugin.name === LEGACY_PLUGIN_ID)) throw new Error('请先在思源设置中停用旧版 siyuan-child-cards 插件');
+    });
+    const anchor = getActiveEditor()?.protyle.wysiwyg?.element || document.body;
+    showPluginIdMigration(anchor, io, this.lifetime.signal, () => this.onDataChanged());
   }
 
   updateProtyleToolbar(toolbar: Toolbar): Toolbar {

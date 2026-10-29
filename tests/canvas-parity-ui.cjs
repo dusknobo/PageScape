@@ -15,15 +15,15 @@ let browser, page;
   const workspace = await api('/api/system/getWorkspaceInfo');
   assert.equal(path.resolve(workspace.workspaceDir).toLowerCase(), path.join(root, '.test-workspace').toLowerCase(), 'Refuse to change user notes');
   if (process.env.SKIP_INSTALL !== '1') {
-    await api('/api/petal/setPetalEnabled', { packageName: 'siyuan-child-cards', enabled: false });
-    await fs.cp(path.join(root, 'dist'), path.join(root, '.test-workspace/data/plugins/siyuan-child-cards'), { recursive: true });
-    await api('/api/petal/setPetalEnabled', { packageName: 'siyuan-child-cards', enabled: true });
+    await api('/api/petal/setPetalEnabled', { packageName: 'PageScape', enabled: false });
+    await fs.cp(path.join(root, 'dist'), path.join(root, '.test-workspace/data/plugins/PageScape'), { recursive: true });
+    await api('/api/petal/setPetalEnabled', { packageName: 'PageScape', enabled: true });
   }
   page = await context.newPage(); const errors = []; const requests = [];
   page.on('pageerror', error => errors.push(error.message)); page.on('request', request => requests.push(request.url()));
   await page.route('https://canvas-parity.invalid/**', route => route.fulfill({ status: 200, contentType: 'text/html', body: '<h1>外部网页测试</h1><p>沙箱内容</p>' }));
   await page.goto(base + '/', { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(plugin => plugin.name === 'siyuan-child-cards'), { timeout: 60000 });
+  await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(plugin => plugin.name === 'PageScape'), { timeout: 60000 });
   await page.locator('[data-key="dialog-changelog"] .b3-dialog__scrim').click({ position: { x: 5, y: 5 }, timeout: 1200 }).catch(() => {});
   await page.locator('#message .b3-snackbar__close').first().click({ timeout: 1200 }).catch(() => {});
   const token = Date.now();
@@ -44,13 +44,13 @@ let browser, page;
     { id: 'Unresolved-one', kind: 'file', file: '../vault/picture.png', unresolved: true, x: 1020, y: 420, width: 260, height: 170, color: 'neutral' },
   ], edges: [{ id: 'Edge-magenta', from: 'Image-one', to: 'Text-C', fromSide: 'bottom', toSide: 'top', fromEnd: 'arrow', toEnd: 'arrow', label: '双向导出箭头', color: '#ff00ff' }] };
   const payload = { format: 'siyuan-child-cards-canvas', version: 1, scene: seed };
-  const board = await api('/api/filetree/createDocWithMd', { notebook, path: '/' + seed.title, markdown: ';;;siyuan-child-cards/canvas-document\n' + JSON.stringify(payload) + '\n;;;\n{: custom-scc-canvas="1"}\n' });
-  await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').openCanvasDocument(id); }, board);
+  const board = await api('/api/filetree/createDocWithMd', { notebook, path: '/' + seed.title, markdown: ';;;PageScape/canvas-document\n' + JSON.stringify(payload) + '\n;;;\n{: custom-scc-canvas="1"}\n' });
+  await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').openCanvasDocument(id); }, board);
   const ui = () => page.locator('.scv-root:visible').last();
   const card = id => ui().locator(`.scv-node[data-scv-node-id=${JSON.stringify(id)}]`);
-  const scene = () => page.evaluate(id => [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(controller => controller.scene?.id === id)?.scene, board);
-  const saved = () => page.waitForFunction(id => { const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].find(controller => controller.scene?.id === id); return controller && !controller.dirty && !controller.saveTask && !controller.transitionTask; }, board, { timeout: 25000 });
-  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].some(controller => controller.scene?.id === id && controller.element.getClientRects().length), board);
+  const scene = () => page.evaluate(id => [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(controller => controller.scene?.id === id)?.scene, board);
+  const saved = () => page.waitForFunction(id => { const controller = [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].find(controller => controller.scene?.id === id); return controller && !controller.dirty && !controller.saveTask && !controller.transitionTask; }, board, { timeout: 25000 });
+  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].some(controller => controller.scene?.id === id && controller.element.getClientRects().length), board);
   await saved(); await ui().getByRole('button', { name: '更多工具', exact: true }).click();
   await ui().getByRole('button', { name: '适应全部', exact: true }).click(); await saved();
   const bold = () => card('Text-A').locator('.scv-note-reading').getByText(/^(粗体导出文字|真实编辑后文字)$/, { exact: true });

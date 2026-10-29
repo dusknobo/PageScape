@@ -4,7 +4,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const base = 'http://127.0.0.1:6807';
-const name = 'siyuan-child-cards';
+const name = 'PageScape';
 let browser, page;
 const report = { passed: [], errors: [] };
 
@@ -29,12 +29,12 @@ const report = { passed: [], errors: [] };
   async function boot(target) {
     target.on('pageerror', error => report.errors.push(error.message));
     await target.goto(base + '/', { waitUntil: 'domcontentloaded' });
-    await target.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'siyuan-child-cards'), undefined, { timeout: 60000 });
+    await target.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'PageScape'), undefined, { timeout: 60000 });
     await target.locator('[data-key="dialog-changelog"] .b3-dialog__scrim').click({ position: { x: 5, y: 5 }, timeout: 1000 }).catch(() => {});
   }
   page = await context.newPage(); await boot(page);
   const documentId = await page.evaluate(async ({ notebook, source, stamp }) => {
-    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards');
+    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape');
     const scene = await plugin.canvasStore.create('正文画布测试 ' + stamp, { notebook });
     scene.viewport = { x: 30, y: 20, zoom: .8 };
     scene.nodes = [
@@ -49,16 +49,16 @@ const report = { passed: [], errors: [] };
   await api('/api/block/appendBlock', { parentID: documentId, dataType: 'markdown', data: '画布后的普通正文 ' + stamp });
   const frame = () => page.locator(`.scv-inline[data-canvas-document="${documentId}"]:visible`);
   const inlineState = () => page.evaluate(id => {
-    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards');
+    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape');
     return [...plugin.inlineCanvases.values()].flatMap(m => [...m.values()]).find(v => v.controller.scene?.id === id)?.controller.scene;
   }, documentId);
   const saved = () => page.waitForFunction(id => {
-    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards');
+    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape');
     const c = [...plugin.inlineCanvases.values()].flatMap(m => [...m.values()]).find(v => v.controller.scene?.id === id)?.controller;
     return c?.scene && !c.dirty && !c.saveTask && !c.transitionTask;
   }, documentId, { timeout: 20000 });
   async function openDocument() {
-    await page.evaluate(id => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openDocument(id), documentId);
+    await page.evaluate(id => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openDocument(id), documentId);
     await frame().waitFor(); await saved();
   }
   async function persisted() {
@@ -75,7 +75,7 @@ const report = { passed: [], errors: [] };
   report.inlineGeometry = await frame().evaluate(el => [...el.querySelectorAll('.scv-node')].map(n => ({ id: n.dataset.scvNodeId, position: getComputedStyle(n).position, rect: n.getBoundingClientRect().toJSON() })));
   assert.ok(docBox.y + docBox.height <= stageBox.y + stageBox.height + 2, JSON.stringify({ stageBox, docBox, cards: report.inlineGeometry }));
   await page.evaluate(id => {
-    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards');
+    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape');
     window.inlineOriginal = [...plugin.inlineCanvases.values()].flatMap(m => [...m.values()]).find(v => v.controller.scene?.id === id);
   }, documentId);
   const before = await inlineState();
@@ -95,7 +95,7 @@ const report = { passed: [], errors: [] };
   assert.ok(await textarea.evaluate(el => document.activeElement === el), 'Autosave preserves textarea focus');
   await page.keyboard.type(' / 保存后继续输入'); await saved();
   assert.equal((await persisted()).nodes.find(n => n.id === 'text-a').text, '自动保存前输入 ' + stamp + ' / 保存后继续输入');
-  assert.ok(await page.evaluate(() => [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').inlineCanvases.values()].some(m => [...m.values()].includes(window.inlineOriginal))), 'The same editor survives its own native rerender');
+  assert.ok(await page.evaluate(() => [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').inlineCanvases.values()].some(m => [...m.values()].includes(window.inlineOriginal))), 'The same editor survives its own native rerender');
   await textarea.press('Escape');
   await frame().getByRole('button', { name: '连线', exact: true }).click();
   await frame().locator('[data-scv-node-id="text-a"] .scv-node-header').click();
@@ -123,10 +123,10 @@ const report = { passed: [], errors: [] };
   const independentNote = standalone().locator('[data-scv-node-id="text-b"]');
   await independentNote.getByRole('button', { name: '编辑便签', exact: true }).click();
   await independentNote.locator('textarea').fill('独立视图保存 ' + stamp);
-  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].some(c => c.scene?.id === id && !c.dirty && !c.saveTask), documentId);
+  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].some(c => c.scene?.id === id && !c.dirty && !c.saveTask), documentId);
   await standalone().getByRole('button', { name: '打开所属文档', exact: true }).click();
   await frame().waitFor(); await saved();
-  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').inlineCanvases.values()].some(m => [...m.values()].some(v => v.controller.scene?.id === id && v.controller.scene.nodes.some(n => n.text?.startsWith('独立视图保存')))), documentId);
+  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').inlineCanvases.values()].some(m => [...m.values()].some(v => v.controller.scene?.id === id && v.controller.scene.nodes.some(n => n.text?.startsWith('独立视图保存')))), documentId);
   report.passed.push('shared document data with standalone editor');
   await frame().getByRole('button', { name: '适应全部', exact: true }).click(); await saved();
 
@@ -146,7 +146,7 @@ const report = { passed: [], errors: [] };
   const destination = page.locator('.scv-destination:visible'); await destination.waitFor();
   await destination.getByLabel('保存到笔记本').selectOption(notebook);
   await destination.getByRole('button', { name: '保存到这里', exact: true }).click();
-  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].some(c => c.element.getClientRects().length && c.scene?.id && c.scene.id !== id && !c.dirty && !c.saveTask), documentId);
+  await page.waitForFunction(id => [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].some(c => c.element.getClientRects().length && c.scene?.id && c.scene.id !== id && !c.dirty && !c.saveTask), documentId);
   assert.equal((await inlineState()).id, documentId, 'Save-copy cannot retarget a document block to its new copy');
   await openDocument();
   await frame().locator('.scv-stage').press('Control+a');
@@ -157,7 +157,7 @@ const report = { passed: [], errors: [] };
   assert.equal((await persisted()).edges.length, 1);
   report.passed.push('save-copy opens independent copy without retargeting document', 'canvas delete and undo do not delete the containing block');
 
-  await page.reload(); await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'siyuan-child-cards'));
+  await page.reload(); await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'PageScape'));
   await openDocument();
   assert.equal(await frame().getByLabel('画布高度', { exact: true }).inputValue(), '880');
   assert.equal((await inlineState()).edges.length, 1);

@@ -4,7 +4,7 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const base = 'http://127.0.0.1:6807';
-const pluginName = 'siyuan-child-cards';
+const pluginName = 'PageScape';
 const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
 let browser, page;
 const report = { passed: [], errors: [] };
@@ -33,10 +33,10 @@ const report = { passed: [], errors: [] };
   page = await context.newPage();
   page.on('pageerror', error => report.errors.push(error.message));
   await page.goto(base + '/', { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'siyuan-child-cards'), undefined, { timeout: 60000 });
+  await page.waitForFunction(() => window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'PageScape'), undefined, { timeout: 60000 });
   await page.locator('[data-key="dialog-changelog"] .b3-dialog__scrim').click({ position: { x: 5, y: 5 }, timeout: 1000 }).catch(() => {});
   const originalId = await page.evaluate(async ({ notebook, source, stamp }) => {
-    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards');
+    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape');
     const scene = await plugin.canvasStore.create('Parity source ' + stamp, { notebook });
     scene.nodes = [
       { id: 'qa-source', kind: 'doc', docId: source, title: 'Source', x: 20, y: 20, width: 450, height: 350, color: 'blue' },
@@ -48,17 +48,17 @@ const report = { passed: [], errors: [] };
   report.original = originalId;
   await page.locator('.scv-root:visible').last().getByRole('button', { name: '更多工具', exact: true }).click();
   const state = () => page.evaluate(() => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     return { scene: c?.scene, dirty: c?.dirty, task: Boolean(c?.saveTask || c?.transitionTask) };
   });
   const saved = () => page.waitForFunction(() => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     return c?.scene && !c.dirty && !c.saveTask && !c.transitionTask;
   }, undefined, { timeout: 20000 });
   await saved();
   const pngBytes = [...await fs.readFile(path.join(root, 'icon.png'))];
   await page.evaluate(async bytes => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     await c.addMedia([new File([new Uint8Array(bytes)], 'parity-fixture.png', { type: 'image/png' })], { x: 100, y: 450 });
   }, pngBytes);
   await saved();
@@ -78,7 +78,7 @@ const report = { passed: [], errors: [] };
   }), 'base64')];
   await api('/api/attr/setBlockAttrs', { id: canvasBlockId, attrs: { 'custom-parity-preserve': 'keep', 'custom-data-assets-other-plugin': media.file } });
   await page.evaluate(async ({ bytes, mediaId }) => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     c.change({ ...c.scene, edges: [{ id: 'media-reference', from: 'qa-source', to: mediaId, label: 'Preserve this edge', color: 'purple' }] });
     c.view.setScene(c.scene); await c.flush();
     await c.addMedia([new File([new Uint8Array(bytes)], 'replacement fixture.png', { type: 'image/png' })], undefined, mediaId);
@@ -94,7 +94,7 @@ const report = { passed: [], errors: [] };
   assert.deepEqual(assetRefs(registered), [replacement.file]); assert.equal(registered['custom-parity-preserve'], 'keep');
   assert.equal(registered['custom-data-assets-other-plugin'], media.file);
   await page.evaluate(async oldFile => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     c.change({ ...c.scene, nodes: [...c.scene.nodes,
       { id: 'asset-note', kind: 'text', text: `![asset](${oldFile})`, x: 1000, y: 20, width: 250, height: 200, color: 'neutral' },
       { id: 'asset-group', kind: 'group', title: 'Asset background', background: oldFile, x: 980, y: 0, width: 400, height: 320, color: 'neutral' },
@@ -103,7 +103,7 @@ const report = { passed: [], errors: [] };
   registered = await api('/api/attr/getBlockAttrs', { id: canvasBlockId });
   assert.deepEqual(assetRefs(registered), [media.file, replacement.file].sort(), 'text and group media references are registered once');
   await page.evaluate(async () => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     c.change({ ...c.scene, nodes: c.scene.nodes.filter(n => !['asset-note', 'asset-group'].includes(n.id)) }); c.view.setScene(c.scene); await c.flush();
   });
   registered = await api('/api/attr/getBlockAttrs', { id: canvasBlockId });
@@ -112,7 +112,7 @@ const report = { passed: [], errors: [] };
   const beforeFailure = (await state()).scene.nodes;
   await page.route('**/api/asset/upload', route => route.fulfill({ status: 500, body: 'fixture failure' }));
   await page.evaluate(async bytes => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     await c.addMedia([new File([new Uint8Array(bytes)], 'failed.png', { type: 'image/png' })]);
   }, pngBytes);
   await page.unroute('**/api/asset/upload');
@@ -128,7 +128,7 @@ const report = { passed: [], errors: [] };
   await page.keyboard.type(' Native edit saved ' + stamp, { delay: 20 });
   await docCard.getByRole('button', { name: '结束编辑', exact: true }).click();
   await page.evaluate(async () => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     await c.closeEditors();
   });
   let sourceSaved = false;
@@ -143,7 +143,7 @@ const report = { passed: [], errors: [] };
   } else report.skipped = ['native editor is being independently diagnosed; this is a partial run'];
 
   await page.evaluate(() => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     window.__qaConvert = c.convertText('qa-convert');
   });
   const location = page.locator('.scv-destination:visible'); await location.waitFor();
@@ -168,7 +168,7 @@ const report = { passed: [], errors: [] };
     { id: 'BD', fromNode: 'B', toNode: 'D', label: 'Keep imported relationship' },
   ], fixtureExtension: { text: 'keep me' } };
   await page.evaluate(file => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     window.__qaImport = c.importCanvas(new File([JSON.stringify(file)], 'Imported QA.canvas', { type: 'application/json' }));
   }, canvasFile);
   await location.waitFor(); await location.getByLabel('画布名称').fill('Imported exact title ' + stamp);
@@ -178,11 +178,11 @@ const report = { passed: [], errors: [] };
   assert.notEqual(imported.id, originalId); assert.equal(imported.title, 'Imported exact title ' + stamp);
   assert.equal(imported.nodes.length, 4); assert.equal(imported.edges.length, 2); assert.equal(imported.edges[0].fromEnd, 'arrow');
   assert.deepEqual(imported.jsonCanvas.fixtureExtension, { text: 'keep me' });
-  const originalAfter = await page.evaluate(id => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvasStore.load(id), originalId);
+  const originalAfter = await page.evaluate(id => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvasStore.load(id), originalId);
   assert.deepEqual(originalAfter.nodes, originalScene.nodes); assert.deepEqual(originalAfter.edges, originalScene.edges);
   report.passed.push('JSON Canvas import uses a new named document/tab and leaves source intact');
   await page.evaluate(() => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     window.__qaSwap = c.swapDocument('D');
   });
   const picker = page.locator('.scc-canvas-picker:visible'); await picker.waitFor();
@@ -196,8 +196,8 @@ const report = { passed: [], errors: [] };
   assert.equal(imported.edges.find(e => e.id === 'BD').to, 'D');
   report.passed.push('unresolved Obsidian note associates with a native document without losing layout/edges');
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'siyuan-child-cards'), undefined, { timeout: 60000 });
-  const loaded = await page.evaluate(id => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvasStore.load(id), imported.id);
+  await page.waitForFunction(() => window.siyuan?.ws?.app?.plugins?.some(p => p.name === 'PageScape'), undefined, { timeout: 60000 });
+  const loaded = await page.evaluate(id => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvasStore.load(id), imported.id);
   assert.deepEqual(loaded.nodes, imported.nodes); assert.deepEqual(loaded.edges, imported.edges);
   report.passed.push('extended nodes and edge options survive document storage and reload');
   if (!process.env.CHILD_CARDS_SKIP_NATIVE) {

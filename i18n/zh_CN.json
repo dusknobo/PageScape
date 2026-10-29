@@ -10,5 +10,6 @@
   "migrateCanvasDocuments": "迁移旧 Canvas 为文档 · Migrate Canvas to Documents",
   "openDocumentCanvas": "打开本文档 Canvas · Open Document Canvas",
   "embedCanvas": "插入或引用 Canvas · Embed Canvas",
-  "canvasReferences": "画布反向引用 · Canvas References"
+  "canvasReferences": "画布反向引用 · Canvas References",
+  "migratePluginId": "迁移旧版插件 ID · Migrate Legacy Plugin ID"
 }

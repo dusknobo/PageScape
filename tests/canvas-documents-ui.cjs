@@ -5,7 +5,7 @@ const crypto = require('node:crypto');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const base = 'http://127.0.0.1:6807';
-const storage = path.join(root, '.test-workspace/data/storage/petal/siyuan-child-cards');
+const storage = path.join(root, '.test-workspace/data/storage/petal/PageScape');
 const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
 const digest = data => crypto.createHash('sha256').update(data).digest('hex');
 let browser, page;
@@ -22,8 +22,8 @@ let browser, page;
   const workspace = await api('/api/system/getWorkspaceInfo');
   assert.equal(path.resolve(workspace.workspaceDir).toLowerCase(), path.join(root, '.test-workspace').toLowerCase(), 'Refuse to mutate a user workspace');
   await api('/api/setting/setBazaar', { trust: true, petalDisabled: false });
-  await api('/api/petal/setPetalEnabled', { packageName: 'siyuan-child-cards', enabled: false });
-  await fs.cp(path.join(root, 'dist'), path.join(root, '.test-workspace/data/plugins/siyuan-child-cards'), { recursive: true });
+  await api('/api/petal/setPetalEnabled', { packageName: 'PageScape', enabled: false });
+  await fs.cp(path.join(root, 'dist'), path.join(root, '.test-workspace/data/plugins/PageScape'), { recursive: true });
   const archive = path.resolve(root, '.qa', 'canvas-document-test-storage-' + Date.now());
   assert.ok(storage.startsWith(root + path.sep) && archive.startsWith(root + path.sep), 'archive stays inside the isolated project');
   await fs.rename(storage, archive).catch(error => { if (error.code !== 'ENOENT') throw error; });
@@ -47,26 +47,26 @@ let browser, page;
   await fs.writeFile(path.join(storage, 'canvas-index.json'), JSON.stringify({ version: 1, boards: [{ id: indexed.id, title: indexed.title, updatedAt: indexed.updatedAt }] }));
   const originals = new Map();
   for (const name of await fs.readdir(storage)) if (/^canvas-[a-z0-9_-]+\.json$/.test(name) && name !== 'canvas-migration.json') originals.set(name, await fs.readFile(path.join(storage, name)));
-  await api('/api/petal/setPetalEnabled', { packageName: 'siyuan-child-cards', enabled: true });
+  await api('/api/petal/setPetalEnabled', { packageName: 'PageScape', enabled: true });
   const errors = [];
   async function boot(target) {
     target.on('pageerror', e => errors.push(e.message));
     await target.goto(base + '/', { waitUntil: 'domcontentloaded' });
-    await target.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(p => p.name === 'siyuan-child-cards'), { timeout: 60000 });
+    await target.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(p => p.name === 'PageScape'), { timeout: 60000 });
     await target.locator('[data-key="dialog-changelog"] .b3-dialog__scrim').click({ position: { x: 5, y: 5 }, timeout: 2000 }).catch(() => {});
     await target.locator('#message .b3-snackbar__close').first().click({ timeout: 3000 }).catch(() => {});
   }
   page = await context.newPage(); await boot(page);
-  await page.evaluate(async () => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openCanvas());
+  await page.evaluate(async () => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openCanvas());
   const canvas = () => page.locator('.scv-root:visible').last();
   async function editNote(value) {
     const card = canvas().locator('.scv-node-text').first();
     await card.getByRole('button', { name: '编辑便签', exact: true }).click();
     await card.getByRole('textbox', { name: '便签内容', exact: true }).fill(value);
   }
-  const scene = () => page.evaluate(() => [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length)?.scene);
+  const scene = () => page.evaluate(() => [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length)?.scene);
   const saved = () => page.waitForFunction(() => {
-    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards');
+    const plugin = window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape');
     const c = [...plugin.canvases.values()].find(c => c.element.getClientRects().length);
     return c?.scene && !plugin.creationTask && !c.dirty && !c.saveTask && !c.transitionTask;
   }, { timeout: 20000 });
@@ -94,13 +94,13 @@ let browser, page;
     assert.deepEqual(backup, bytes, 'byte-identical verified backup');
     assert.equal(manifest.files.find(f => f.name === name).sha256, digest(bytes));
   }
-  await page.evaluate(async documentId => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openCanvasDocument(documentId), documentId);
+  await page.evaluate(async documentId => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openCanvasDocument(documentId), documentId);
   await saved(); const migrated = await scene();
   assert.equal(migrated.id, documentId); assert.deepEqual(migrated.nodes, legacy.nodes); assert.deepEqual(migrated.edges, legacy.edges); assert.deepEqual(migrated.viewport, legacy.viewport);
   assert.match(documentId, /^\d{14}-[a-z0-9]{7}$/);
   const info = await api('/api/block/getBlockInfo', { id: documentId });
   assert.ok(info.path.includes('/' + parent + '/'), 'migration used the requested parent document');
-  const repeat = await page.evaluate(async notebook => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').migrateCanvases({ notebook }), notebook);
+  const repeat = await page.evaluate(async notebook => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').migrateCanvases({ notebook }), notebook);
   assert.deepEqual(repeat.mapping, manifest.mapping, 'migration is idempotent');
   console.log('Migration, exact backups, requested location and idempotence passed', { count: manifest.boards.length, documentId });
 
@@ -116,27 +116,27 @@ let browser, page;
   await page.locator('.protyle:visible .scv-doc-card').getByRole('button', { name: '打开 Canvas', exact: true }).click(); await saved();
   assert.equal((await scene()).id, documentId);
   await api('/api/filetree/renameDocByID', { id: documentId, title: '文档树改名 ' + token });
-  await page.waitForFunction(title => [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].some(c => c.scene?.title === title), '文档树改名 ' + token);
+  await page.waitForFunction(title => [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].some(c => c.scene?.title === title), '文档树改名 ' + token);
   await api('/api/filetree/moveDocsByID', { fromIDs: [documentId], toID: movedParent });
   await editNote('移动后继续编辑'); await saved();
   assert.ok((await api('/api/block/getBlockInfo', { id: documentId })).path.includes('/' + movedParent + '/'));
 
   // Copy using native document duplication; each root ID must own an independent canvas.
   const duplicated = await api('/api/filetree/duplicateDoc', { id: documentId });
-  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openCanvasDocument(docId), duplicated.id); await saved();
+  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openCanvasDocument(docId), duplicated.id); await saved();
   assert.equal((await scene()).id, duplicated.id);
   await editNote('原生副本文字'); await saved();
   assert.ok((await api('/api/block/getBlockKramdown', { id: canvasBlock.id })).kramdown.includes('移动后继续编辑'), 'native copy does not write original canvas');
-  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openCanvasDocument(docId), documentId); await saved();
+  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openCanvasDocument(docId), documentId); await saved();
   assert.equal(await canvas().locator('textarea.scv-note-text').inputValue(), '移动后继续编辑');
 
   // Simulate restoring a document-history snapshot through the same native block API.
   await api('/api/block/updateBlock', { id: canvasBlock.id, dataType: 'markdown', data: savedMarkdown.kramdown });
   await page.waitForFunction(() => [...document.querySelectorAll('.scv-root textarea')].some(n => n.value === '文档中保存的编辑'));
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(p => p.name === 'siyuan-child-cards'), { timeout: 60000 });
+  await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(p => p.name === 'PageScape'), { timeout: 60000 });
   await page.locator('#message .b3-snackbar__close').first().click({ timeout: 3000 }).catch(() => {});
-  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openCanvasDocument(docId), documentId); await saved();
+  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openCanvasDocument(docId), documentId); await saved();
   assert.equal(await canvas().locator('textarea.scv-note-text').inputValue(), '文档中保存的编辑');
   console.log('Document body, native rename/move/copy, history snapshot and reload passed');
 
@@ -145,17 +145,17 @@ let browser, page;
   await canvas().getByRole('button', { name: '新建', exact: true }).click(); await selectLocation(parent); await saved();
   const newId = (await scene()).id; assert.notEqual(newId, documentId);
   assert.ok((await api('/api/block/getBlockInfo', { id: newId })).path.includes('/' + parent + '/'));
-  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').openCanvasDocument(docId), documentId); await saved();
+  await page.evaluate(async docId => window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').openCanvasDocument(docId), documentId); await saved();
   await canvas().getByRole('button', { name: '另存副本', exact: true }).click(); await selectLocation(movedParent);
   await page.waitForFunction(id => {
-    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'siyuan-child-cards').canvases.values()].find(c => c.element.getClientRects().length);
+    const c = [...window.siyuan.ws.app.plugins.find(p => p.name === 'PageScape').canvases.values()].find(c => c.element.getClientRects().length);
     return c?.scene && c.scene.id !== id && !c.transitionTask;
   }, documentId);
   const copyId = (await scene()).id;
   assert.ok((await api('/api/block/getBlockInfo', { id: copyId })).path.includes('/' + movedParent + '/'));
   await page.screenshot({ path: path.join(root, '.qa/canvas-documents.png'), fullPage: true });
-  await api('/api/petal/setPetalEnabled', { packageName: 'siyuan-child-cards', enabled: false });
-  await page.waitForFunction(() => !window.siyuan.ws.app.plugins.some(p => p.name === 'siyuan-child-cards'), { timeout: 15000 });
+  await api('/api/petal/setPetalEnabled', { packageName: 'PageScape', enabled: false });
+  await page.waitForFunction(() => !window.siyuan.ws.app.plugins.some(p => p.name === 'PageScape'), { timeout: 15000 });
   assert.equal(await page.locator('.scv-root,.scv-doc-card').count(), 0);
   const pluginErrors = errors.filter(e => /Canvas|scv-|child-cards|Cannot read properties/.test(e)); assert.deepEqual(pluginErrors, []);
   await fs.writeFile(path.join(root, '.qa/canvas-documents-integration.json'), JSON.stringify({ notebook, parent, documentId, copyId, newId, manifest, errors, passed: ['migration UI', 'byte-identical originals and backups', 'orphan canvas discovery', 'idempotent migration', 'selected parent', 'document block content', 'source unchanged', 'open from document', 'native rename and move', 'native duplicate independence', 'history snapshot restore', 'reload', 'new location and cancel', 'save copy location', 'disable cleanup'] }, null, 2));

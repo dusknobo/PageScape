@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
 const output = path.join(root, '.test-build');
-const entries = { 'canvas-geometry.test': 'tests/canvas-geometry.test.ts', 'canvas-assets.test': 'tests/canvas-assets.test.ts', 'canvas-features.test': 'tests/canvas-features.test.ts' };
+const entries = { 'canvas-geometry.test': 'tests/canvas-geometry.test.ts', 'canvas-assets.test': 'tests/canvas-assets.test.ts', 'canvas-features.test': 'tests/canvas-features.test.ts', 'plugin-id-migration.test': 'tests/plugin-id-migration.test.ts' };
 await mkdir(output, { recursive: true });
 await build({
   absWorkingDir: root, entryPoints: Object.fromEntries(Object.keys(entries).map(name => [name, name])), bundle: true, outdir: output, outExtension: { '.js': '.cjs' },

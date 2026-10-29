@@ -2,7 +2,7 @@
 
 在思源笔记**文档正文中**插入子页面预览卡片，或直接操作 Canvas 中的文档、便签、分组和连线；也保留**独立 Canvas 页签**。
 
-最低思源版本 **3.8.3**，插件版本 **0.6.3**，当前集成环境为思源 **3.8.8**。正在申请思源集市上架，审核通过前可通过 GitHub Releases 手动安装。
+最低思源版本 **3.8.3**，插件版本 **0.7.0**，当前集成环境为思源 **3.8.8**。正在申请思源集市上架，审核通过前可通过 GitHub Releases 手动安装。
 
 
 [返回项目首页](../README.md) · [更新记录](../CHANGELOG.md)
@@ -10,10 +10,12 @@
 ## 安装
 
 1. 获取本项目构建生成的 `package.zip`。
-2. 在思源工作空间的 `data/plugins/` 下建立 `siyuan-child-cards` 文件夹，将压缩包解压到该文件夹。文件夹中应直接包含 `plugin.json`、`index.js`、`index.css` 等文件。
+2. 在思源工作空间的 `data/plugins/` 下建立 `PageScape` 文件夹，将压缩包解压到该文件夹。文件夹中应直接包含 `plugin.json`、`index.js`、`index.css` 等文件。
 3. 重启思源，在插件管理中启用「页境 · PageScape」。
 
 更新时，先关闭思源或禁用插件，再用新安装包覆盖这个插件文件夹中的文件。
+
+从 0.6.x 的 `siyuan-child-cards` 升级时，先保存并关闭旧编辑页，停用旧插件，再启用 PageScape。通过命令面板的「迁移旧版插件 ID」检查清单并选择「备份并迁移」。原块备份在 `data/storage/petal/PageScape/plugin-id-backups/`，旧存储原件保留。只迁移已打开且未加密笔记本中的三种旧版自定义块；保留块 ID、正文、布局和引用。其他笔记本打开后可重新检查。存在存储冲突时停止，重复迁移会识别已导入文件并保留其后续修改。
 
 ## 使用
 
@@ -120,7 +122,7 @@ Canvas 主要面向桌面端与桌面浏览器，当前保存位置支持已打�
 
 ### 迁移旧版 JSON 画布
 
-旧版 Canvas 文件仍在思源工作空间 `data/storage/petal/siyuan-child-cards/` 下，文件名为 `canvas-*.json`，索引为 `canvas-index.json`。新版不会自动把它们改写或删除。
+旧版 Canvas 文件原件仍在思源工作空间 `data/storage/petal/siyuan-child-cards/` 下，文件名为 `canvas-*.json`，索引为 `canvas-index.json`。先执行「迁移旧版插件 ID」将这些文件复制到 `data/storage/petal/PageScape/`，再执行下方的旧 JSON 画布转文档流程；旧目录保留。
 
 使用画布工具栏的「迁移旧画布…」，或命令「迁移旧 Canvas 为文档 · Migrate Canvas to Documents」，选择新画布文档的保存位置。迁移会先在插件存储目录下的 `canvas-backups/<runUUID>/` 保存原始文件，并核对备份字节与 SHA-256；校验通过后才创建画布文档，再校验迁移后的布局。
 

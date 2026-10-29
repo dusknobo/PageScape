@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 
 const root = path.resolve(__dirname, '..');
 const base = 'http://127.0.0.1:6807';
-const pluginName = 'siyuan-child-cards';
+const pluginName = 'PageScape';
 const userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36';
 let browser, page;
 
@@ -42,13 +42,13 @@ let browser, page;
     try { creates.push(request.postDataJSON()); } catch { /* Invalid requests will fail their own UI/API checks. */ }
   });
   await page.goto(base + '/', { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(plugin => plugin.name === 'siyuan-child-cards'), { timeout: 60000 });
+  await page.waitForFunction(() => window.siyuan?.layout?.centerLayout && window.siyuan.ws?.app?.plugins?.some(plugin => plugin.name === 'PageScape'), { timeout: 60000 });
   await page.locator('[data-key="dialog-changelog"] .b3-dialog__scrim').click({ position: { x: 5, y: 5 }, timeout: 1500 }).catch(() => {});
   await page.locator('#message .b3-snackbar__close').first().click({ timeout: 1500 }).catch(() => {});
 
   const dialog = () => page.locator('.scv-destination:visible');
   const canvas = () => page.locator('.scv-root:visible').last();
-  const snapshot = () => page.evaluate(() => [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').canvases.values()].map(controller => ({
+  const snapshot = () => page.evaluate(() => [...window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').canvases.values()].map(controller => ({
     id: controller.scene?.id, title: controller.scene?.title, visible: !!controller.element.getClientRects().length,
   })));
   let sqlSequence = 0;
@@ -67,7 +67,7 @@ let browser, page;
   }
   async function command(langKey, twice = false) {
     await page.evaluate(({ langKey, twice }) => {
-      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards');
+      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape');
       const entry = plugin.commands.find(command => command.langKey === langKey);
       if (!entry?.callback) throw new Error(`Command missing: ${langKey}`);
       // Do not await a callback that may itself wait for the modal's answer.
@@ -86,7 +86,7 @@ let browser, page;
   }
   async function waitForCreated(title, previousIds) {
     await page.waitForFunction(({ title, previousIds }) => {
-      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards');
+      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape');
       if (plugin.creationTask) return false;
       return [...plugin.canvases.values()].some(controller => controller.element.getClientRects().length &&
         controller.scene?.title === title && !previousIds.includes(controller.scene.id) &&
@@ -99,13 +99,13 @@ let browser, page;
   }
   async function waitForBoard(id) {
     await page.waitForFunction(id => {
-      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards');
+      const plugin = window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape');
       return !plugin.creationTask && [...plugin.canvases.values()].some(controller => controller.element.getClientRects().length &&
         controller.scene?.id === id && !controller.dirty && !controller.saveTask && !controller.transitionTask);
     }, id, { timeout: 30000 });
   }
   async function openBoard(id) {
-    await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').openCanvasDocument(id); }, id);
+    await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').openCanvasDocument(id); }, id);
     await waitForBoard(id);
   }
   async function body(id) {
@@ -115,7 +115,7 @@ let browser, page;
     return (await api('/api/block/getBlockKramdown', { id: blocks[0].id })).kramdown;
   }
 
-  await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').openDocument(id); }, fixture);
+  await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').openDocument(id); }, fixture);
   await page.locator('.protyle:visible').getByText(intro, { exact: true }).last().waitFor();
   await expectCount(1);
   const initialTabs = await snapshot();
@@ -154,7 +154,7 @@ let browser, page;
   const tabsBeforeCancel = (await snapshot()).length;
   await command('newCanvas');
   await dialog().getByRole('button', { name: '取消', exact: true }).click();
-  await page.waitForFunction(() => !window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').creationTask);
+  await page.waitForFunction(() => !window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').creationTask);
   await expectCount(countBeforeCancel);
   assert.equal(creates.length, requestsBeforeCancel, 'Cancellation emits no create request');
   assert.equal((await snapshot()).length, tabsBeforeCancel);
@@ -162,7 +162,7 @@ let browser, page;
 
   // Exercise the actual Protyle slash menu, rather than directly calling the
   // plugin's slash callback: the keyword must be discoverable in the editor.
-  await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').openDocument(id); }, fixture);
+  await page.evaluate(id => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').openDocument(id); }, fixture);
   await page.locator('.protyle:visible').getByText(intro, { exact: true }).last().click();
   await page.keyboard.press('End'); await page.keyboard.press('Enter');
   await page.keyboard.type('/newcanvas', { delay: 65 });
@@ -193,7 +193,7 @@ let browser, page;
   await openBoard(a); await openBoard(a);
   assert.equal((await snapshot()).length, beforeOpen.length);
   assert.equal((await snapshot()).filter(item => item.id === a).length, 1);
-  await page.evaluate(() => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'siyuan-child-cards').openCanvas(); });
+  await page.evaluate(() => { void window.siyuan.ws.app.plugins.find(plugin => plugin.name === 'PageScape').openCanvas(); });
   await waitForBoard(a);
   await expectCount(5);
   assert.deepEqual(await body(a), aBefore);
@@ -238,7 +238,7 @@ let browser, page;
   let documentIdsAfterUnload;
   try {
     await api('/api/petal/setPetalEnabled', { packageName: pluginName, enabled: false });
-    await page.waitForFunction(() => !window.siyuan.ws.app.plugins.some(plugin => plugin.name === 'siyuan-child-cards'), { timeout: 15000 });
+    await page.waitForFunction(() => !window.siyuan.ws.app.plugins.some(plugin => plugin.name === 'PageScape'), { timeout: 15000 });
     await page.waitForFunction(() => !document.querySelector('.scv-destination,.scc-canvas-picker'), { timeout: 10000 });
     assert.equal(await page.locator('.scv-destination,.scc-canvas-picker').count(), 0, 'Unload removes both outer and inner dialogs');
     assert.equal(creates.length, requestsBeforeUnload, 'Unload does not create a pending document');
@@ -249,7 +249,7 @@ let browser, page;
   } finally {
     // Leave the isolated instance enabled for subsequent regression scripts.
     await api('/api/petal/setPetalEnabled', { packageName: pluginName, enabled: true });
-    await page.waitForFunction(() => window.siyuan.ws.app.plugins.some(plugin => plugin.name === 'siyuan-child-cards'), { timeout: 15000 });
+    await page.waitForFunction(() => window.siyuan.ws.app.plugins.some(plugin => plugin.name === 'PageScape'), { timeout: 15000 });
   }
   assert.equal(creates.length, requestsBeforeUnload, 'Re-enabling cannot resume the cancelled creation');
   console.log('Unload cancels outer destination and nested picker without creating a document');

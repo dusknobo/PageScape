@@ -1,16 +1,16 @@
-# 页境 · PageScape 0.6.3
+# 页境 · PageScape 0.7.0
 
 让页面展开，让知识相连。
 
-源码、集市提交与版本发布统一使用 `dusknobo/PageScape`。补齐集市清单、语言键与预览图，并保留原插件 ID `siyuan-child-cards`，已有文档与画布无需迁移。
+插件 ID、安装目录、源码和发布仓库统一为 `PageScape`。包含集市清单、语言键、预览图，以及旧版插件 ID 迁移工具。
 
 包含正文子页预览卡片、共享正文 Canvas、子页自动跟随、搜索和小地图、分组折叠、树形布局、反向引用、模板、媒体卡片与导入导出。集市上架仍需维护者审核。
 
 ## 安装
 
-下载本页的 `package.zip`，解压至思源工作空间 `data/plugins/siyuan-child-cards/`，在插件设置中启用「页境 · PageScape」。文件夹中应直接包含 `plugin.json` 和 `index.js`。
+下载本页的 `package.zip`，解压至思源工作空间 `data/plugins/PageScape/`，在插件设置中启用「页境 · PageScape」。文件夹中应直接包含 `plugin.json` 和 `index.js`。
 
-已有本地版本可在禁用插件后覆盖插件文件；保留旧安装目录名及内部 ID，无需迁移现有画布。
+从 0.6.x 升级：先保存并关闭旧编辑页、停用 `siyuan-child-cards`，再启用 PageScape。运行「迁移旧版插件 ID · Migrate Legacy Plugin ID」，检查数量后点击「备份并迁移」。备份位于 `data/storage/petal/PageScape/plugin-id-backups/`，旧存储原件保留；迁移只更换命名空间，保留块 ID、正文、画布和引用。只检查已打开且未加密的笔记本，其他笔记本可稍后再次迁移。
 
 - `package.zip`：可直接安装的插件文件。
 - `SHA256SUMS`：压缩包的 SHA-256 校验值。

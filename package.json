@@ -1,6 +1,6 @@
 {
-  "name": "siyuan-child-cards",
-  "version": "0.6.3",
+  "name": "pagescape",
+  "version": "0.7.0",
   "private": true,
   "type": "module",
   "description": "PageScape for SiYuan: live child-document cards and shared inline Canvas",
@@ -20,7 +20,8 @@
     "test:insertion": "node tests/insertion.cjs",
     "test:canvas-features": "node tests/canvas-features-ui.cjs",
     "verify:package": "node scripts/verify-package.mjs",
-    "docs:screenshot": "node scripts/demo.mjs"
+    "docs:screenshot": "node scripts/demo.mjs",
+    "test:plugin-id": "node tests/plugin-id-migration-ui.cjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",
