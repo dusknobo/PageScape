@@ -1,0 +1,16 @@
+node_modules/
+.npm-cache/
+dist/
+package.zip
+.test-build/
+.qa/
+.test-workspace/
+.test-home/
+.runtime/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db

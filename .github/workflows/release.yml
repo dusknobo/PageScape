@@ -1,0 +1,31 @@
+name: Publish release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Verify release version
+        run: |
+          node --input-type=module -e "import { readFileSync } from 'node:fs'; const version = JSON.parse(readFileSync('plugin.json', 'utf8')).version; if (process.env.GITHUB_REF_NAME !== 'v' + version) throw new Error('Tag and plugin version differ');"
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm run verify:package
+      - name: Publish installable plugin
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" package.zip dist/SHA256SUMS --verify-tag --title "页境 · PageScape $GITHUB_REF_NAME" --notes-file docs/RELEASE_NOTES.md --latest

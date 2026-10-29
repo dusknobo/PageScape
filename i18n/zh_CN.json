@@ -1,0 +1,14 @@
+{
+  "insertChildCards": "插入子页卡片",
+  "insertChildCardsEnglish": "Insert Child Cards",
+  "openCanvas": "打开 Canvas 画布",
+  "openCanvasEnglish": "Open Canvas",
+  "newCanvas": "新建 Canvas 画布",
+  "newCanvasEnglish": "New Canvas",
+  "importChildrenToCanvas": "将当前文档子页导入 Canvas",
+  "importChildrenToCanvasEnglish": "Import Children to Canvas",
+  "migrateCanvasDocuments": "迁移旧 Canvas 为文档 · Migrate Canvas to Documents",
+  "openDocumentCanvas": "打开本文档 Canvas · Open Document Canvas",
+  "embedCanvas": "插入或引用 Canvas · Embed Canvas",
+  "canvasReferences": "画布反向引用 · Canvas References"
+}

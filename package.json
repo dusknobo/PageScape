@@ -1,0 +1,44 @@
+{
+  "name": "siyuan-child-cards",
+  "version": "0.6.1",
+  "private": true,
+  "type": "module",
+  "description": "PageScape for SiYuan: live child-document cards and shared inline Canvas",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "node scripts/test.mjs && node scripts/test-canvas-model.mjs && node scripts/test-canvas-migration.mjs && node scripts/test-canvas-geometry.mjs",
+    "test:canvas": "node tests/canvas-documents-ui.cjs && node tests/canvas-documents-safety.cjs",
+    "test:canvas-documents": "node tests/canvas-documents-ui.cjs",
+    "test:canvas-safety": "node tests/canvas-documents-safety.cjs",
+    "test:canvas-create": "node tests/canvas-create-ui.cjs",
+    "test:canvas-inline": "node tests/canvas-inline.cjs",
+    "test:canvas-parity": "node tests/canvas-parity-ui.cjs && node tests/canvas-parity-controller.cjs",
+    "test:canvas-parity-controller": "node tests/canvas-parity-controller.cjs",
+    "test:ui": "node tests/ui.cjs",
+    "test:preview": "node tests/preview.cjs",
+    "test:insertion": "node tests/insertion.cjs",
+    "test:canvas-features": "node tests/canvas-features-ui.cjs",
+    "verify:package": "node scripts/verify-package.mjs",
+    "docs:screenshot": "node scripts/demo.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "typescript": "6.0.3",
+    "siyuan": "1.2.8",
+    "jszip": "3.10.1",
+    "playwright": "1.58.2"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dusknobo/PageScape.git"
+  },
+  "homepage": "https://github.com/dusknobo/PageScape",
+  "bugs": {
+    "url": "https://github.com/dusknobo/PageScape/issues"
+  }
+}
