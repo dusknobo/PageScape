@@ -1,8 +1,8 @@
 {
   "name": "siyuan-child-cards",
   "author": "dusknobo",
-  "url": "https://github.com/dusknobo/PageScape",
-  "version": "0.6.1",
+  "url": "https://github.com/dusknobo/siyuan-child-cards",
+  "version": "0.6.2",
   "minAppVersion": "3.8.3",
   "backends": [
     "all"
@@ -17,17 +17,14 @@
   "disabledInPublish": true,
   "displayName": {
     "default": "PageScape",
-    "zh_CN": "页境 · PageScape",
     "zh-CN": "页境 · PageScape"
   },
   "description": {
     "default": "Live child-document cards, shared inline Canvas, templates and navigation for SiYuan.",
-    "zh_CN": "让页面展开，让知识相连：子页卡片、共享正文画布、模板与知识导航。",
     "zh-CN": "让页面展开，让知识相连：子页卡片、共享正文画布、模板与知识导航。"
   },
   "readme": {
     "default": "README.en.md",
-    "zh_CN": "README.md",
     "zh-CN": "README.md"
   },
   "icon": "icon.png",
@@ -45,5 +42,6 @@
     "画布",
     "whiteboard",
     "knowledge-map"
-  ]
+  ],
+  "preview": "preview.png"
 }

@@ -1,6 +1,6 @@
 import { build } from 'esbuild';
 import { chromium } from 'playwright';
-import { mkdir, readFile } from 'node:fs/promises';
+import { copyFile, mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -24,5 +24,6 @@ try {
   await page.addScriptTag({ path: path.join(output, 'demo.js') });
   await page.evaluate(() => document.fonts.ready);
   await page.screenshot({ path: path.join(root, 'docs/images/overview.png'), fullPage: true });
-  console.log('Generated docs/images/overview.png from the real canvas view and authored demo content.');
+  await copyFile(path.join(root, 'docs/images/overview.png'), path.join(root, 'preview.png'));
+  console.log('Generated docs/images/overview.png and preview.png from the real canvas view and authored demo content.');
 } finally { await browser.close(); }

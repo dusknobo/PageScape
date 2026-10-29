@@ -25,7 +25,7 @@ PageScape 是一个思源笔记插件，将自动更新的子页卡片与可编�
 
 ## 安装
 
-当前版本 **0.6.1**；最低思源版本 **3.8.3**，已在 **3.8.8** 验证。主要支持桌面端与桌面浏览器，尚未提交思源集市。
+当前版本 **0.6.2**；最低思源版本 **3.8.3**，已在 **3.8.8** 验证。主要支持桌面端与桌面浏览器。正在申请思源集市上架，审核通过前可通过 Releases 安装。
 
 1. 从 [Releases](https://github.com/dusknobo/PageScape/releases/latest) 下载 **package.zip**。
 2. 解压到 `<思源工作空间>/data/plugins/siyuan-child-cards/`。
@@ -33,7 +33,7 @@ PageScape 是一个思源笔记插件，将自动更新的子页卡片与可编�
 
 更新前先禁用插件，再替换插件文件。Release 同时提供 `SHA256SUMS`，可用于核对下载文件。
 
-> 插件内部 ID 继续使用 `siyuan-child-cards`。请保留这个安装目录名，以兼容已有自定义块、画布引用和旧版存储。仓库名及显示名称为 PageScape。
+> 插件内部 ID 继续使用 `siyuan-child-cards`。请保留这个安装目录名，以兼容已有自定义块、画布引用和旧版存储。项目主仓库为 PageScape；[集市发布仓库](https://github.com/dusknobo/siyuan-child-cards) 使用与 ID 相同的名称，展示名称均为「页境 · PageScape」。
 
 ## 快速开始
 

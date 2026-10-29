@@ -23,13 +23,13 @@ PageScape is a SiYuan plugin for live child-document previews and editable, docu
 
 ## Install
 
-Version **0.6.1**. Minimum SiYuan version: **3.8.3**. Tested with **3.8.8**, primarily on desktop and desktop browsers. This repository has not yet been submitted to the SiYuan marketplace.
+Version **0.6.2**. Minimum SiYuan version: **3.8.3**. Tested with **3.8.8**, primarily on desktop and desktop browsers. Marketplace listing is being requested; use Releases to install while the application is under review.
 
 1. Download `package.zip` from the [latest release](https://github.com/dusknobo/PageScape/releases/latest).
 2. Extract it into `<workspace>/data/plugins/siyuan-child-cards/`.
 3. Check that `plugin.json` and `index.js` are directly inside that folder, then enable **PageScape** in SiYuan.
 
-Disable the plugin before replacing its files when updating. The internal package ID remains **`siyuan-child-cards`** so existing custom blocks, references and legacy storage continue to work. The display name and repository name are PageScape.
+Disable the plugin before replacing its files when updating. The internal package ID remains **`siyuan-child-cards`** so existing custom blocks, references and legacy storage continue to work. PageScape is the main source repository and display name; the [marketplace distribution repository](https://github.com/dusknobo/siyuan-child-cards) matches the installed package ID and contains the same source and releases.
 
 ## Quick start
 

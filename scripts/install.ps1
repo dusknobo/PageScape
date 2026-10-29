@@ -25,7 +25,7 @@ if (Test-Path -LiteralPath $target) {
     if ($disabled.code -ne 0) { throw "Cannot disable previous plugin: $($disabled.msg)" }
 }
 New-Item -ItemType Directory -Path (Join-Path $target 'i18n') -Force | Out-Null
-$files = @('index.js','index.css','plugin.json','README.md','README.en.md','LICENSE','icon.png','i18n/zh_CN.json','i18n/en_US.json','docs/images/overview.png')
+$files = @('index.js','index.css','plugin.json','README.md','README.en.md','LICENSE','icon.png','preview.png','i18n/zh_CN.json','i18n/en_US.json','docs/images/overview.png')
 $hashes = @()
 foreach ($file in $files) {
     $source = Join-Path $sourceRoot $file
