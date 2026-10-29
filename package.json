@@ -1,6 +1,6 @@
 {
   "name": "siyuan-child-cards",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "private": true,
   "type": "module",
   "description": "PageScape for SiYuan: live child-document cards and shared inline Canvas",

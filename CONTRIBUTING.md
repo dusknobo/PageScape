@@ -50,17 +50,18 @@ npm run test:canvas-parity
 - 新增持久化字段时同步维护模型校验、JSON Canvas 交换和必要测试。
 - 发布时更新 `plugin.json`、`package.json`、锁文件和更新记录，并创建与版本一致的 `vX.Y.Z` 标签。
 
-### 主仓库与集市发布仓库
+### 唯一发布仓库
 
-主仓库为 `dusknobo/PageScape`，集市从 `dusknobo/siyuan-child-cards` 的 Latest Release 获取安装包。两边使用同一提交和标签；`plugin.json.url` 指向集市发布仓库，以符合清单规则并保留原有插件 ID。
+源码、集市提交和版本发布统一使用 `dusknobo/PageScape`；`plugin.json.url` 必须指向该仓库。内部 ID 保持 `siyuan-child-cards`，兼容已有文档与存储。官方当前校验器将仓库地址与包 ID 分别校验；不要为了改显示名称而改动已有持久化命名空间。
 
-首次配置发布远端：
+发布时将经过验证的 `main` 和对应版本标签推送到主仓库：
 
 ```sh
-git remote add bazaar https://github.com/dusknobo/siyuan-child-cards.git
+git push origin main
+git push origin vX.Y.Z
 ```
 
-每次发布，将经过验证的 `main` 和同一个版本标签推送到两个远端。两边的发布工作流都会重新检查并生成 `package.zip`；必须确认集市发布仓库也有成功的 Release 才算完成更新。不要只更新主仓库的 Release。
+发布工作流重新检查并生成 `package.zip`。集市从本仓库的 Latest Release 读取安装包；发布完成后核对下载和 `SHA256SUMS`。
 
 ## 界面示例
 
